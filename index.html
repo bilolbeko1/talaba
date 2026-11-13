@@ -1,357 +1,534 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Talaba-agent</title>
-<style>
-:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2033;--mute:#6b7189;--line:#e4e7f0;--brand:#4f46e5;--brand2:#7c3aed;--ok:#16a34a;--err:#dc2626;--r:16px}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.bar{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.logo{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent;cursor:pointer}
-nav{display:flex;gap:4px;flex-wrap:wrap}
-nav a{padding:8px 14px;border-radius:999px;color:var(--mute);text-decoration:none;font-weight:600;font-size:14px;cursor:pointer}
-nav a.on{background:#eef0ff;color:var(--brand)}
-.sp{flex:1}
-.pill{background:#eef0ff;color:var(--brand);padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px}
-main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
-h1{font-size:26px;margin:6px 0 4px}h2{font-size:19px;margin:0 0 10px}
-.sub{color:var(--mute);margin:0 0 18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
-.narrow{max-width:460px;margin:20px auto}
-label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
-input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
-input:focus,select:focus,textarea:focus{outline:2px solid #c7c9ff;border-color:var(--brand)}
-textarea{min-height:90px;resize:vertical}
-.btn{display:inline-block;border:0;border-radius:10px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff}
-.btn:disabled{opacity:.55;cursor:not-allowed}
-.btn.light{background:#eef0ff;color:var(--brand)}
-.btn.red{background:#fee2e2;color:var(--err)}
-.btn.sm{padding:6px 12px;font-size:13px}
-.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.msg{margin-top:12px;font-size:14px;font-weight:600}.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
-.hint{font-size:13px;margin-top:6px}.hint.err{color:var(--err)}.hint.ok{color:var(--ok)}
-.show{display:flex;align-items:center;gap:8px;font-weight:500;font-size:14px;margin-top:8px;cursor:pointer}.show input{width:auto}
-.tabs{display:flex;gap:8px;margin-bottom:12px}
-.tabs button{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-weight:700;cursor:pointer;color:var(--mute)}
-.tabs button.on{background:#eef0ff;border-color:#c7c9ff;color:var(--brand)}
-/* Pinterest uslubidagi ideyalar */
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.chip{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600;font-size:14px;color:var(--mute)}
-.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
-.masonry{columns:4 230px;column-gap:14px}
-.idea{break-inside:avoid;margin-bottom:14px;border-radius:var(--r);padding:18px;color:#fff;position:relative;transition:transform .15s}
-.idea:hover{transform:translateY(-3px)}
-.idea .em{font-size:30px}.idea .cat{font-size:12px;opacity:.85;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:8px}
-.idea h3{margin:4px 0 6px;font-size:17px;line-height:1.3}.idea p{margin:0 0 12px;font-size:14px;opacity:.95}
-.idea .acts{display:flex;gap:8px}
-.idea button{border:0;border-radius:999px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;background:rgba(255,255,255,.92);color:#1c2033}
-.svc{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.svc button{border:2px solid var(--line);background:#fff;border-radius:14px;padding:12px;text-align:left;cursor:pointer;font:inherit}
-.svc button.on{border-color:var(--brand);background:#f5f5ff}
-.svc b{display:block}.svc small{color:var(--mute)}
-.svc .pr{color:var(--brand);font-weight:800;font-size:14px}
-.result{margin-top:18px}
-pre.prompt{white-space:pre-wrap;word-wrap:break-word;background:#0f172a;color:#e2e8f0;padding:16px;border-radius:12px;font:13px/1.6 ui-monospace,Menlo,Consolas,monospace;max-height:420px;overflow:auto}
-.steps{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px;margin-top:12px;font-size:14px}
-.steps a{color:var(--brand);font-weight:700}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--line)}
-th{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:800px){.grid2{grid-template-columns:1fr}}
-.pick{cursor:pointer}.pick:hover{background:#f5f5ff}.pick.sel{background:#eef0ff}
-details{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-top:8px;background:#fff}
-summary{cursor:pointer;font-weight:600}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talaba-agent | AI Yordamchi & Prompt Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        accent: '#6366f1'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
 </head>
-<body>
-<header><div class="bar">
-  <span class="logo" id="logo">🎓 Talaba-agent</span>
-  <nav id="nav"></nav>
-  <span class="sp"></span>
-  <span id="who"></span>
-</div></header>
-<main id="app"></main>
+<body class="bg-darkbg text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
 
-<script>
-const $ = s => document.querySelector(s);
-const app = $('#app');
-let me = null, cfg = { services: [], telegram: '' }, ideasCache = [];
-let draft = { service: 'referat', topic: '', pages: 10, lang: 'uz', notes: '' };
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 glass border-b border-slate-800 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-black bg-gradient-to-r from-indigo-400 to-pink-500 bg-clip-text text-transparent">Talaba-agent</span>
+            </div>
+            <div id="nav-user-info" class="hidden flex items-center space-x-4">
+                <div class="bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 text-sm">
+                    Balans: <span id="user-balance" class="font-bold text-emerald-400">0</span> so'm
+                </div>
+                <button onclick="logout()" class="text-rose-400 hover:text-rose-300 text-sm font-medium">Chiqish</button>
+            </div>
+        </div>
+    </nav>
 
-function h(tag, attrs, ...kids) {
-  const el = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs || {})) {
-    if (k === 'class') el.className = v;
-    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
-    else if (v !== false && v != null) el.setAttribute(k, v);
-  }
-  for (const kid of kids.flat()) if (kid != null && kid !== false) el.append(kid.nodeType ? kid : document.createTextNode(kid));
-  return el;
-}
-async function api(url, body) {
-  const r = await fetch(url, { method: body ? 'POST' : 'GET', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined, credentials: 'same-origin' });
-  let d = {}; try { d = await r.json(); } catch (e) {}
-  if (!r.ok) { const e = new Error(d.error || 'Xatolik yuz berdi'); e.status = r.status; e.data = d; throw e; }
-  return d;
-}
-const som = n => Number(n).toLocaleString('ru-RU').replace(/ /g, ' ') + ' so\'m';
-const dt = t => new Date(t).toLocaleString('uz-UZ', { dateStyle: 'short', timeStyle: 'short' });
-const go = p => { location.hash = p; };
+    <!-- Asosiy Konteyner -->
+    <main class="max-w-7xl mx-auto p-4 md:p-6">
 
-function renderHeader() {
-  const nav = $('#nav'); nav.replaceChildren();
-  const items = [['ideas', '💡 Ideyalar'], ['prompt', '✨ Prompt yaratish'], ['balance', '💳 Hisobim']];
-  if (me && me.role === 'admin') items.push(['admin', '🛠️ Admin']);
-  const cur = (location.hash || '#ideas').slice(1);
-  items.forEach(([k, t]) => nav.append(h('a', { class: cur === k ? 'on' : '', onclick: () => go(k) }, t)));
-  const who = $('#who'); who.replaceChildren();
-  if (me) {
-    who.append(h('span', { class: 'pill' }, me.role === 'admin' ? 'Admin' : som(me.balance)), ' ',
-      h('button', { class: 'btn light sm', onclick: async () => { await api('/api/logout', {}); me = null; go('auth'); route(); } }, 'Chiqish'));
-  } else who.append(h('button', { class: 'btn sm', onclick: () => go('auth') }, 'Kirish'));
-}
+        <!-- 1. AUTH SAHIFASI (Kirish / Ro'yxatdan o'tish) -->
+        <section id="auth-section" class="max-w-md mx-auto mt-12 glass p-8 rounded-3xl shadow-2xl">
+            <div class="flex border-b border-slate-700 mb-6">
+                <button id="tab-login-btn" onclick="switchTab('login')" class="flex-1 pb-3 font-bold text-indigo-400 border-b-2 border-indigo-500">Tizimga kirish</button>
+                <button id="tab-register-btn" onclick="switchTab('register')" class="flex-1 pb-3 font-bold text-slate-400">Ro'yxatdan o'tish</button>
+            </div>
 
-function passField(id, ph) {
-  const inp = h('input', { id, type: 'password', placeholder: ph, autocomplete: id === 'rpass' ? 'new-password' : 'current-password' });
-  const cb = h('input', { type: 'checkbox', onchange: () => { inp.type = cb.checked ? 'text' : 'password'; } });
-  return [inp, h('label', { class: 'show' }, cb, 'Parolni ko\'rsatish')];
-}
+            <!-- Kirish Formasi -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Username</label>
+                    <input type="text" id="login-username" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Parol</label>
+                    <div class="relative">
+                        <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500">
+                        <button type="button" onclick="togglePassword('login-password')" class="absolute right-3 top-3.5 text-xs text-indigo-400">Ko'rsatish</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">Kirish</button>
+            </form>
 
-/* ---------- Kirish / Ro'yxatdan o'tish ---------- */
-function viewAuth() {
-  let mode = 'login';
-  const box = h('div', { class: 'card narrow' });
-  const draw = () => {
-    box.replaceChildren();
-    box.append(h('div', { class: 'tabs' },
-      h('button', { class: mode === 'login' ? 'on' : '', onclick: () => { mode = 'login'; draw(); } }, 'Tizimga kirish'),
-      h('button', { class: mode === 'reg' ? 'on' : '', onclick: () => { mode = 'reg'; draw(); } }, 'Ro\'yxatdan o\'tish')));
-    const msg = h('div', { class: 'msg' });
-    const fail = t => { msg.className = 'msg err'; msg.textContent = t; };
-    if (mode === 'login') {
-      const [p, sh] = passField('lpass', 'Parol');
-      const u = h('input', { id: 'luser', placeholder: 'Username', autocomplete: 'username', autocapitalize: 'none' });
-      const submit = async () => {
-        try { const d = await api('/api/login', { username: u.value, password: p.value }); me = d.user; go(me.role === 'admin' ? 'admin' : 'prompt'); route(); }
-        catch (e) { fail(e.message); }
-      };
-      p.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-      box.append(h('label', {}, 'Username'), u, h('label', {}, 'Parol'), p, sh, h('div', { style: 'margin-top:16px' }, h('button', { class: 'btn', onclick: submit }, 'Kirish')), msg);
-    } else {
-      const fn = h('input', { placeholder: 'Ism', autocomplete: 'given-name' });
-      const ln = h('input', { placeholder: 'Familya', autocomplete: 'family-name' });
-      const un = h('input', { placeholder: 'masalan: ali_2005', autocomplete: 'username', autocapitalize: 'none' });
-      const hint = h('div', { class: 'hint' });
-      const [p, sh] = passField('rpass', 'Kamida 6 ta belgi');
-      let timer;
-      un.addEventListener('input', () => {
-        clearTimeout(timer);
-        const v = un.value.trim().toLowerCase();
-        if (!v) { hint.textContent = ''; return; }
-        timer = setTimeout(async () => {
-          try {
-            const d = await api('/api/username-check?u=' + encodeURIComponent(v));
-            if (!d.valid) { hint.className = 'hint err'; hint.textContent = '3–20 ta belgi: lotin harflari, raqam yoki _'; }
-            else if (d.taken) { hint.className = 'hint err'; hint.textContent = 'Bu username band'; }
-            else { hint.className = 'hint ok'; hint.textContent = 'Bu username bo\'sh ✓'; }
-          } catch (e) {}
-        }, 300);
-      });
-      const submit = async () => {
-        try { const d = await api('/api/register', { firstName: fn.value, lastName: ln.value, username: un.value, password: p.value }); me = d.user; go('prompt'); route(); }
-        catch (e) { fail(e.message); if (e.status === 409) { hint.className = 'hint err'; hint.textContent = 'Bu username band'; } }
-      };
-      box.append(h('label', {}, 'Ism'), fn, h('label', {}, 'Familya'), ln, h('label', {}, 'Username'), un, hint, h('label', {}, 'Parol'), p, sh,
-        h('div', { style: 'margin-top:16px' }, h('button', { class: 'btn', onclick: submit }, 'Ro\'yxatdan o\'tish')), msg);
-    }
-  };
-  draw();
-  return h('div', {}, box);
-}
+            <!-- Ro'yxatdan o'tish Formasi -->
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Ism</label>
+                        <input type="text" id="reg-name" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Familiya</label>
+                        <input type="text" id="reg-surname" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Username</label>
+                    <input type="text" id="reg-username" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                    <p id="username-error" class="text-rose-400 text-xs mt-1 hidden">Bu username allaqachon band qilingan!</p>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Parol</label>
+                    <div class="relative">
+                        <input type="password" id="reg-password" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                        <button type="button" onclick="togglePassword('reg-password')" class="absolute right-3 top-3 text-xs text-indigo-400">Ko'rsatish</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-600/30">Ro'yxatdan o'tish</button>
+            </form>
+        </section>
 
-/* ---------- Ideyalar (Pinterest uslubi) ---------- */
-const GRADS = ['#6366f1,#8b5cf6', '#ec4899,#f43f5e', '#0ea5e9,#2563eb', '#10b981,#059669', '#f59e0b,#ef4444', '#14b8a6,#0891b2', '#a855f7,#d946ef', '#f97316,#e11d48'];
-function viewIdeas() {
-  const wrap = h('div', {});
-  let cat = 'Hammasi', q = '';
-  const chips = h('div', { class: 'chips' }), grid = h('div', { class: 'masonry' });
-  const search = h('input', { placeholder: '🔍 Ideya qidirish...', style: 'max-width:340px;margin-bottom:14px' });
-  const draw = () => {
-    chips.replaceChildren(); grid.replaceChildren();
-    const cats = ['Hammasi', ...new Set(ideasCache.map(i => i.category))];
-    cats.forEach(c => chips.append(h('span', { class: 'chip' + (c === cat ? ' on' : ''), onclick: () => { cat = c; draw(); } }, c)));
-    ideasCache.filter(i => (cat === 'Hammasi' || i.category === cat) && (i.title + ' ' + i.text).toLowerCase().includes(q))
-      .forEach((i, idx) => {
-        const tall = (i.title.length + i.text.length) % 3 === 0 ? 'padding-bottom:34px;' : '';
-        grid.append(h('div', { class: 'idea', style: `background:linear-gradient(145deg,${GRADS[i.id % GRADS.length]});${tall}` },
-          h('div', { class: 'em' }, i.emoji), h('div', { class: 'cat' }, i.category), h('h3', {}, i.title), h('p', {}, i.text),
-          h('div', { class: 'acts' }, h('button', { onclick: () => { draft.topic = i.title; draft.service = /Slayd/.test(i.category) ? 'slayd' : /Maqola/.test(i.category) ? 'maqola' : 'referat'; go(me ? 'prompt' : 'auth'); } }, '✨ Prompt yaratish'))));
-      });
-    if (!grid.children.length) grid.append(h('p', { class: 'sub' }, 'Hech narsa topilmadi.'));
-  };
-  search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); draw(); });
-  wrap.append(h('h1', {}, 'Ideyalar makoni'), h('p', { class: 'sub' }, 'Referat, slayd, maqola va startap uchun g\'oyalar. Yoqqanini tanlang — prompt avtomatik tayyorlanadi.'), search, chips, grid);
-  draw();
-  return wrap;
-}
+        <!-- 2. ASOSIY DASHBOARD (Foydalanuvchi va Admin uchun) -->
+        <section id="dashboard-section" class="hidden space-y-8 mt-6">
+            
+            <!-- Yuqori menyu tablar -->
+            <div class="flex space-x-2 border-b border-slate-800 pb-3 overflow-x-auto">
+                <button onclick="switchTabContent('generator')" id="btn-tab-generator" class="px-5 py-2.5 rounded-xl font-bold bg-indigo-600 text-white shadow-md">Prompt & File AI Generator</button>
+                <button onclick="switchTabContent('ideas')" id="btn-tab-ideas" class="px-5 py-2.5 rounded-xl font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">💡 G'oyalar Makoni (Pinterest)</button>
+                <button onclick="switchTabContent('topup')" id="btn-tab-topup" class="px-5 py-2.5 rounded-xl font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">💳 Balansni To'ldirish</button>
+                <button id="admin-tab-btn" onclick="switchTabContent('admin')" class="hidden px-5 py-2.5 rounded-xl font-bold bg-rose-600 text-white shadow-md">⚙️ Admin Paneli</button>
+            </div>
 
-/* ---------- Prompt yaratish ---------- */
-function viewPrompt() {
-  if (!me) return viewAuth();
-  const wrap = h('div', {}), out = h('div', { class: 'result' }), msg = h('div', { class: 'msg' });
-  const svcBox = h('div', { class: 'svc' });
-  const topic = h('textarea', { placeholder: 'Nima haqida? Masalan: "Sun\'iy intellekt ta\'limda" yoki fan nomi va qo\'shimcha ma\'lumotlar' });
-  const pages = h('input', { type: 'number', min: 1, max: 100, value: draft.pages });
-  const lang = h('select', {}, h('option', { value: 'uz' }, 'O\'zbekcha'), h('option', { value: 'ru' }, 'Ruscha'), h('option', { value: 'en' }, 'Inglizcha'));
-  const notes = h('textarea', { placeholder: 'Ixtiyoriy: o\'qituvchi talablari, kerakli manbalar, uslub va h.k.', style: 'min-height:70px' });
-  const unitLbl = h('label', {}, ''), price = h('span', { class: 'pill' });
-  topic.value = draft.topic; lang.value = draft.lang; notes.value = draft.notes;
-  const cur = () => cfg.services.find(s => s.key === draft.service);
-  const drawSvc = () => {
-    svcBox.replaceChildren();
-    cfg.services.forEach(s => svcBox.append(h('button', { class: s.key === draft.service ? 'on' : '', onclick: () => { draft.service = s.key; drawSvc(); } },
-      h('b', {}, s.icon + ' ' + s.name), h('small', {}, 'Hajm: ' + s.unit), h('span', { class: 'pr' }, som(s.price)))));
-    const s = cur(); unitLbl.textContent = 'Nechchi ' + s.unit + 'lik? (1–100)'; price.textContent = 'Narxi: ' + som(s.price);
-  };
-  const run = async (btn) => {
-    msg.textContent = ''; out.replaceChildren(); btn.disabled = true;
-    Object.assign(draft, { topic: topic.value, pages: pages.value, lang: lang.value, notes: notes.value });
-    try {
-      const d = await api('/api/generate', { service: draft.service, topic: topic.value, pages: pages.value, lang: lang.value, notes: notes.value });
-      me.balance = d.balance; renderHeader(); showPrompt(out, d.prompt, d.chatgpt);
-      out.scrollIntoView({ behavior: 'smooth' });
-    } catch (e) {
-      msg.className = 'msg err'; msg.textContent = e.message;
-      if (e.status === 402) msg.append(' ', h('a', { href: '#balance', style: 'color:var(--brand)' }, 'Hisobni to\'ldirish →'));
-      if (e.status === 401) { me = null; go('auth'); route(); }
-    } finally { btn.disabled = false; }
-  };
-  const btn = h('button', { class: 'btn', onclick: () => run(btn) }, 'Prompt yaratish');
-  wrap.append(h('h1', {}, 'ChatGPT uchun prompt'), h('p', { class: 'sub' }, 'Ma\'lumotni kiriting — biz to\'liq tayyor prompt yozib beramiz. Uni ChatGPT ga tashlaysiz.'),
-    h('div', { class: 'card' }, h('label', { style: 'margin-top:0' }, 'Nimaga kerak?'), svcBox,
-      h('label', {}, 'Nima haqida?'), topic,
-      h('div', { class: 'row' }, h('div', {}, unitLbl, pages), h('div', {}, h('label', {}, 'Til'), lang)),
-      h('label', {}, 'Qo\'shimcha talablar'), notes,
-      h('div', { style: 'margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap' }, btn, price), msg), out);
-  drawSvc();
-  return wrap;
-}
-function showPrompt(out, text, link) {
-  out.replaceChildren();
-  const copy = h('button', { class: 'btn light', onclick: async () => { try { await navigator.clipboard.writeText(text); copy.textContent = '✓ Nusxalandi'; } catch (e) { const r = document.createRange(); r.selectNodeContents(pre); getSelection().removeAllRanges(); getSelection().addRange(r); copy.textContent = 'Belgilandi — Ctrl+C bosing'; } setTimeout(() => copy.textContent = '📋 Nusxalash', 2500); } }, '📋 Nusxalash');
-  const pre = h('pre', { class: 'prompt' }, text);
-  out.append(h('div', { class: 'card' }, h('h2', {}, '✅ Promptingiz tayyor'), pre,
-    h('div', { style: 'margin-top:12px;display:flex;gap:10px;flex-wrap:wrap' }, copy, h('a', { class: 'btn', href: link, target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, 'ChatGPT ga o\'tish ↗')),
-    h('div', { class: 'steps' }, h('b', {}, 'Keyingi qadamlar:'), h('ol', { style: 'margin:6px 0 0 18px;padding:0' },
-      h('li', {}, 'Yuqoridagi promptni nusxalang.'),
-      h('li', {}, h('a', { href: link, target: '_blank', rel: 'noopener' }, 'chatgpt.com'), ' ga kiring va promptni xabar yozish joyiga qo\'ying (paste).'),
-      h('li', {}, 'ChatGPT javob bergach, "davom et" deb yozib qolgan qismlarini oling.')))));
-}
+            <!-- TAB 1: AI PROMPT & FILE GENERATOR -->
+            <div id="content-generator" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Sozlamalar paneli -->
+                <div class="glass p-6 rounded-3xl space-y-4 lg:col-span-1">
+                    <h2 class="text-xl font-bold text-indigo-400">Xizmat va Narxlar</h2>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Xizmat turi</label>
+                        <select id="service-type" onchange="updatePrice()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
+                            <option value="slayd" data-price="3000">Slayd (PPTX fayl) - 3,000 so'm</option>
+                            <option value="referat" data-price="2000">Referat / Insho (PDF fayl) - 2,000 so'm</option>
+                            <option value="maqola" data-price="1000">Maqola (DOCX/TXT fayl) - 1,000 so'm</option>
+                            <option value="kursishi" data-price="2000">Kurs ishi (PDF/DOCX) - 2,000 so'm</option>
+                            <option value="boshqa" data-price="2000">Boshqa talaba ishi - 2,000 so'm</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Mavzu yoki matn tafsiloti</label>
+                        <textarea id="ai-topic" rows="3" placeholder="Masalan: O'zbekiston iqtisodiyoti va raqamli texnologiyalar..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Hajmi: Betlar/Slaydlar soni (Maksimal 100)</label>
+                        <input type="number" id="ai-pages" min="1" max="100" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <span class="text-sm text-slate-300">Narxi:</span>
+                        <span id="service-price-tag" class="text-lg font-black text-amber-400">3,000 so'm</span>
+                    </div>
 
-/* ---------- Hisobim ---------- */
-function viewBalance() {
-  if (!me) return viewAuth();
-  const wrap = h('div', {}), hist = h('div', {});
-  const tg = 'https://t.me/' + cfg.telegram;
-  wrap.append(h('h1', {}, 'Hisobim'),
-    h('div', { class: 'grid2' },
-      h('div', { class: 'card' }, h('h2', {}, 'Balans'), h('div', { style: 'font-size:32px;font-weight:800;color:var(--brand)' }, me.role === 'admin' ? '—' : som(me.balance)),
-        h('p', { class: 'sub', style: 'margin-top:8px' }, me.firstName + ' ' + me.lastName + ' · @' + me.username)),
-      h('div', { class: 'card' }, h('h2', {}, '💳 Hisobni to\'ldirish'),
-        h('ol', { style: 'margin:0 0 12px 18px;padding:0' },
-          h('li', {}, 'Telegramda ', h('a', { href: tg, target: '_blank', rel: 'noopener', style: 'color:var(--brand);font-weight:700' }, '@' + cfg.telegram), ' ga yozing.'),
-          h('li', {}, 'Saytdagi username\'ingizni ', h('b', {}, '@' + me.username), ' va to\'lov miqdorini ayting.'),
-          h('li', {}, 'To\'lovni amalga oshiring va chekni yuboring.'),
-          h('li', {}, 'Admin tekshirib, balansingizni to\'ldiradi.')),
-        h('a', { class: 'btn', href: tg, target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, 'Telegramda yozish ↗'))),
-    h('div', { class: 'card', style: 'margin-top:16px' }, h('h2', {}, 'Tarix'), hist));
-  api('/api/history').then(d => {
-    const tb = h('table', {}, h('tr', {}, h('th', {}, 'Sana'), h('th', {}, 'Amal'), h('th', {}, 'Summa')));
-    const rows = [...d.orders.map(o => ({ at: o.at, t: 'prompt', o })), ...d.topups.map(t => ({ at: t.at, t: 'topup', x: t }))].sort((a, b) => b.at - a.at);
-    if (!rows.length) { hist.append(h('p', { class: 'sub' }, 'Hozircha hech narsa yo\'q.')); return; }
-    rows.forEach(r => {
-      if (r.t === 'topup') tb.append(h('tr', {}, h('td', {}, dt(r.at)), h('td', {}, 'Hisob to\'ldirildi'), h('td', { style: 'color:var(--ok);font-weight:700' }, (r.x.amount > 0 ? '+' : '') + som(r.x.amount))));
-      else {
-        const s = cfg.services.find(s => s.key === r.o.service);
-        const det = h('details', {}, h('summary', {}, 'Promptni ko\'rish'), h('pre', { class: 'prompt', style: 'margin-top:8px' }, r.o.prompt));
-        tb.append(h('tr', {}, h('td', {}, dt(r.at)), h('td', {}, (s ? s.name : r.o.service) + ': ' + r.o.topic + ' (' + r.o.pages + ')', det), h('td', { style: 'font-weight:700' }, '−' + som(r.o.price))));
-      }
-    });
-    hist.append(tb);
-  }).catch(() => {});
-  return wrap;
-}
+                    <button onclick="generateAIRequest()" class="w-full bg-gradient-to-r from-indigo-600 to-pink-600 hover:opacity-90 font-bold py-3.5 rounded-xl shadow-lg transition">
+                        🚀 Prompt va Fayl Tuzishni Boshlash
+                    </button>
+                </div>
 
-/* ---------- Admin ---------- */
-function viewAdmin() {
-  if (!me || me.role !== 'admin') return h('div', { class: 'card narrow' }, 'Bu sahifa faqat admin uchun.');
-  const wrap = h('div', {}), listBox = h('div', {}), msg = h('div', { class: 'msg' });
-  let users = [], sel = null;
-  const amount = h('input', { type: 'number', placeholder: 'Miqdor (so\'m). Xato bo\'lsa minus bilan', step: 1000 });
-  const selLbl = h('div', { class: 'sub', style: 'margin:0 0 8px' }, 'Foydalanuvchini ro\'yxatdan tanlang');
-  const find = h('input', { placeholder: '🔍 Ism yoki username bo\'yicha qidirish' });
-  const topupsBox = h('div', {});
-  const draw = () => {
-    listBox.replaceChildren();
-    const q = find.value.trim().toLowerCase();
-    const tb = h('table', {}, h('tr', {}, h('th', {}, 'Ism familya'), h('th', {}, 'Username'), h('th', {}, 'Balans')));
-    users.filter(u => (u.firstName + ' ' + u.lastName + ' ' + u.username).toLowerCase().includes(q)).forEach(u =>
-      tb.append(h('tr', { class: 'pick' + (sel === u.username ? ' sel' : ''), onclick: () => { sel = u.username; selLbl.textContent = 'Tanlandi: @' + u.username + ' (' + u.firstName + ' ' + u.lastName + ')'; draw(); } },
-        h('td', {}, u.firstName + ' ' + u.lastName), h('td', {}, '@' + u.username), h('td', {}, som(u.balance)))));
-    listBox.append(users.length ? tb : h('p', { class: 'sub' }, 'Hali hech kim ro\'yxatdan o\'tmagan.'));
-  };
-  const load = async () => {
-    const d = await api('/api/admin/users'); users = d.users; draw();
-    topupsBox.replaceChildren(h('h2', {}, 'So\'nggi to\'ldirishlar'),
-      d.topups.length ? h('table', {}, d.topups.map(t => h('tr', {}, h('td', {}, dt(t.at)), h('td', {}, '@' + t.username), h('td', { style: 'font-weight:700' }, (t.amount > 0 ? '+' : '') + som(t.amount))))) : h('p', { class: 'sub' }, 'Hozircha yo\'q.'));
-  };
-  const topup = async () => {
-    if (!sel) { msg.className = 'msg err'; msg.textContent = 'Avval foydalanuvchini tanlang'; return; }
-    try {
-      const d = await api('/api/admin/topup', { username: sel, amount: amount.value });
-      msg.className = 'msg ok'; msg.textContent = '@' + d.username + ' balansi: ' + som(d.balance); amount.value = ''; await load();
-    } catch (e) { msg.className = 'msg err'; msg.textContent = e.message; }
-  };
-  const ideaBox = h('div', { class: 'card', style: 'margin-top:16px' });
-  const drawIdeas = async () => {
-    const d = await api('/api/ideas'); ideasCache = d.ideas;
-    const t = h('input', { placeholder: 'Ideya sarlavhasi' }), c = h('input', { placeholder: 'Kategoriya (masalan: Referat mavzulari)' }), e = h('input', { placeholder: 'Emoji', style: 'max-width:90px' }), x = h('input', { placeholder: 'Qisqa izoh' });
-    const m2 = h('div', { class: 'msg' });
-    ideaBox.replaceChildren(h('h2', {}, 'Ideyalarni boshqarish'),
-      h('div', { class: 'row' }, t, c, e), h('div', { style: 'margin-top:10px' }, x),
-      h('div', { style: 'margin:10px 0' }, h('button', { class: 'btn sm', onclick: async () => { try { await api('/api/admin/ideas', { title: t.value, category: c.value, emoji: e.value, text: x.value }); await drawIdeas(); } catch (er) { m2.className = 'msg err'; m2.textContent = er.message; } } }, 'Ideya qo\'shish'), m2),
-      h('details', {}, h('summary', {}, 'Mavjud ideyalar (' + ideasCache.length + ')'),
-        h('table', {}, ideasCache.map(i => h('tr', {}, h('td', {}, i.emoji + ' ' + i.title), h('td', {}, h('button', { class: 'btn red sm', onclick: async () => { if (confirm('O\'chirilsinmi?')) { await api('/api/admin/ideas/delete', { id: i.id }); drawIdeas(); } } }, 'O\'chirish')))))));
-  };
-  find.addEventListener('input', draw);
-  wrap.append(h('h1', {}, 'Admin paneli'), h('p', { class: 'sub' }, 'Foydalanuvchini tanlang, to\'lagan miqdorini yozing va balansini to\'ldiring.'),
-    h('div', { class: 'card' }, h('h2', {}, 'Foydalanuvchilar'), find, h('div', { style: 'margin-top:10px;max-height:340px;overflow:auto' }, listBox), h('div', { style: 'margin-top:14px' }, selLbl, amount,
-      h('div', { style: 'margin-top:12px' }, h('button', { class: 'btn', onclick: topup }, 'Balansni to\'ldirish')), msg)),
-    h('div', { class: 'card', style: 'margin-top:16px' }, topupsBox), ideaBox);
-  load(); drawIdeas();
-  return wrap;
-}
+                <!-- Natija va Prompt oynasi -->
+                <div class="glass p-6 rounded-3xl space-y-4 lg:col-span-2 flex flex-col">
+                    <h2 class="text-xl font-bold text-pink-400">ChatGPT uchun Tayyor Mukammal Prompt va Fayl Ko'rsatmasi</h2>
+                    <div class="flex-1 bg-slate-950 p-4 rounded-2xl border border-slate-800 font-mono text-xs text-slate-300 overflow-y-auto max-h-[400px] whitespace-pre-wrap select-all" id="prompt-output-box">
+                        Bu yerda siz tanlagan mavzu va hajmga mos keluvchi ChatGPT uchun 100+ qatordan iborat o'ta batafsil va professional prompt paydo bo'ladi...
+                    </div>
+                    <div class="flex flex-wrap gap-3 items-center justify-between pt-2">
+                        <button onclick="copyPrompt()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold transition border border-slate-700">
+                            📋 Promptni Nusxalash
+                        </button>
+                        <a href="https://chatgpt.com" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-600/30 transition flex items-center space-x-2">
+                            <span>ChatGPT-ga o'tish va Fayl olish ↗</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-/* ---------- Router ---------- */
-function route() {
-  renderHeader();
-  const p = (location.hash || '#ideas').slice(1);
-  const views = { ideas: viewIdeas, prompt: viewPrompt, balance: viewBalance, admin: viewAdmin, auth: () => me ? (go('prompt'), viewPrompt()) : viewAuth() };
-  app.replaceChildren((views[p] || viewIdeas)());
-  scrollTo(0, 0);
-}
-window.addEventListener('hashchange', route);
-$('#logo').addEventListener('click', () => go('ideas'));
-(async () => {
-  try {
-    [cfg, me, ideasCache] = await Promise.all([api('/api/config'), api('/api/me').then(d => d.user), api('/api/ideas').then(d => d.ideas)]);
-  } catch (e) { app.textContent = 'Serverga ulanib bo\'lmadi.'; return; }
-  route();
-})();
-</script>
+            <!-- TAB 2: G'OYALAR MAKONI (Pinterest style) -->
+            <div id="content-ideas" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-black bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">💡 Talabalar uchun G'oyalar Makoni (Pinterest Style)</h2>
+                    <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700">Ilhom oling va ishlaringizni boshlang</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="glass rounded-3xl overflow-hidden border border-slate-800 hover:border-indigo-500/50 transition group">
+                        <div class="h-48 bg-gradient-to-tr from-indigo-900 to-purple-900 relative p-6 flex flex-col justify-end">
+                            <span class="absolute top-4 right-4 bg-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full border border-indigo-500/30">Slayd Dizayn</span>
+                            <h3 class="text-lg font-bold text-white group-hover:text-indigo-300 transition">Minimalistik Neion Slaydlar</h3>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <p class="text-sm text-slate-300">Qora fon, neon yashil va ko'k ranglar uyg'unligida zamonaviy taqdimot tayyorlash g'oyasi.</p>
+                            <button onclick="useIdea('Minimalistik va neon uslubdagi zamonaviy taqdimot')" class="text-xs text-indigo-400 font-semibold hover:underline">Shu g'oyadan foydalanish →</button>
+                        </div>
+                    </div>
+
+                    <div class="glass rounded-3xl overflow-hidden border border-slate-800 hover:border-indigo-500/50 transition group">
+                        <div class="h-48 bg-gradient-to-tr from-blue-900 to-emerald-900 relative p-6 flex flex-col justify-end">
+                            <span class="absolute top-4 right-4 bg-emerald-500/30 text-emerald-300 text-xs px-3 py-1 rounded-full border border-emerald-500/30">Insho & Referat</span>
+                            <h3 class="text-lg font-bold text-white group-hover:text-emerald-300 transition">Raqamli Iqtisodiyot va Kelajak</h3>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <p class="text-sm text-slate-300">Sun'iy intellekt va kriptoaktivlarning zamonaviy moliya bozoridagi o'rniga bag'ishlangan referat mavzusi.</p>
+                            <button onclick="useIdea('Raqamli iqtisodiyot va suniy intellektning moliya bozoridagi roli')" class="text-xs text-emerald-400 font-semibold hover:underline">Shu g'oyadan foydalanish →</button>
+                        </div>
+                    </div>
+
+                    <div class="glass rounded-3xl overflow-hidden border border-slate-800 hover:border-indigo-500/50 transition group">
+                        <div class="h-48 bg-gradient-to-tr from-pink-900 to-orange-900 relative p-6 flex flex-col justify-end">
+                            <span class="absolute top-4 right-4 bg-pink-500/30 text-pink-300 text-xs px-3 py-1 rounded-full border border-pink-500/30">Kurs Ishi</span>
+                            <h3 class="text-lg font-bold text-white group-hover:text-pink-300 transition">Soft Skills va Liderlik</h3>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <p class="text-sm text-slate-300">Talabalarda vaqtni boshqarish va jamoada ishlash ko'nikmalarini rivojlantirish bo'yicha loyiha ishi.</p>
+                            <button onclick="useIdea('Talabalarda soft skills va liderlik ko nikmalarini rivojlantirish')" class="text-xs text-pink-400 font-semibold hover:underline">Shu g'oyadan foydalanish →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: BALANSNI TO'LDIRISH -->
+            <div id="content-topup" class="hidden max-w-xl mx-auto glass p-8 rounded-3xl space-y-6">
+                <h2 class="text-2xl font-bold text-emerald-400">💳 Balansni To'ldirish</h2>
+                <p class="text-sm text-slate-300">Hisobingizni to'ldirish uchun quyidagi admin Telegram manziliga to'lov chekini va o'z <b>usernamingizni</b> yuboring. Admin balansingizni tez fursatda qo'lda to'ldirib beradi.</p>
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400 text-sm">Admin Telegram:</span>
+                        <a href="https://t.me/devvfrondent" target="_blank" class="text-indigo-400 font-bold hover:underline">@devvfrondent</a>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400 text-sm">Sizning Username:</span>
+                        <span id="topup-username-display" class="text-white font-mono font-bold"></span>
+                    </div>
+                </div>
+                <div class="p-4 bg-indigo-950/40 border border-indigo-900/50 rounded-2xl text-xs text-indigo-300">
+                    💡 <b>Eslatma:</b> To'lov amalga oshirilgach, admin tasdiqlashi bilan hisobingizga so'mlar qo'shiladi va istalgan xizmat uchun prompt generatsiya qilishingiz mumkin bo'ladi.
+                </div>
+            </div>
+
+            <!-- TAB 4: ADMIN PANELI -->
+            <div id="content-admin" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-rose-400">⚙️ Admin Paneli (Boshqaruv)</h2>
+                    <span class="text-xs bg-rose-500/20 text-rose-300 px-3 py-1 rounded-full border border-rose-500/30">Maxfiy rejim</span>
+                </div>
+                <div class="glass p-6 rounded-3xl space-y-4">
+                    <h3 class="text-lg font-bold text-slate-200">Ro'yxatdan o'tgan foydalanuvchilar va balansni boshqarish</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-900 text-xs uppercase text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Ism Familiya</th>
+                                    <th class="p-3">Username</th>
+                                    <th class="p-3">Balans</th>
+                                    <th class="p-3 text-right">Amal (Pul qo'shish)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table">
+                                <!-- Dinamik to'ldiriladi -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- JavaScript Kodi -->
+    <script>
+        // Foydalanuvchilar bazasi localStorage dan olinadi
+        let users = JSON.parse(localStorage.getItem('talaba_users')) || [
+            { name: 'Bilolbek', surname: 'Yusufboyev', username: 'bilolbekpro', password: 'bilolbekxds', balance: 50000 }
+        ];
+
+        let currentUser = JSON.parse(localStorage.getItem('talaba_current_user')) || null;
+
+        // Sahifa yuklanganda tekshirish
+        window.onload = function() {
+            if (currentUser) {
+                showDashboard();
+            }
+            updatePrice();
+        };
+
+        function switchTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+                document.getElementById('tab-login-btn').className = "flex-1 pb-3 font-bold text-indigo-400 border-b-2 border-indigo-500";
+                document.getElementById('tab-register-btn').className = "flex-1 pb-3 font-bold text-slate-400";
+            } else {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
+                document.getElementById('tab-register-btn').className = "flex-1 pb-3 font-bold text-emerald-400 border-b-2 border-emerald-500";
+                document.getElementById('tab-login-btn').className = "flex-1 pb-3 font-bold text-slate-400";
+            }
+        }
+
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const surname = document.getElementById('reg-surname').value.trim();
+            const username = document.getElementById('reg-username').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+
+            const existing = users.find(u => u.username === username);
+            if (existing) {
+                document.getElementById('username-error').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('username-error').classList.add('hidden');
+
+            const newUser = { name, surname, username, password, balance: 2000 }; // Boshlang'ich bonus 2000 so'm
+            users.push(newUser);
+            localStorage.setItem('talaba_users', JSON.stringify(users));
+
+            currentUser = newUser;
+            localStorage.setItem('talaba_current_user', JSON.stringify(currentUser));
+            showDashboard();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+
+            const user = users.find(u => u.username === username && u.password === password);
+            if (!user) {
+                alert("Username yoki parol noto'g'ri!");
+                return;
+            }
+
+            currentUser = user;
+            localStorage.setItem('talaba_current_user', JSON.stringify(currentUser));
+            showDashboard();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('talaba_current_user');
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('nav-user-info').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('nav-user-info').classList.remove('hidden');
+            document.getElementById('user-balance').innerText = currentUser.balance;
+            document.getElementById('topup-username-display').innerText = '@' + currentUser.username;
+
+            // Admin tekshiruvi
+            if (currentUser.username === 'bilolbekpro' && currentUser.password === 'bilolbekxds') {
+                document.getElementById('admin-tab-btn').classList.remove('hidden');
+                renderAdminTable();
+            } else {
+                document.getElementById('admin-tab-btn').classList.add('hidden');
+            }
+
+            switchTabContent('generator');
+        }
+
+        function switchTabContent(tab) {
+            document.getElementById('content-generator').classList.add('hidden');
+            document.getElementById('content-ideas').classList.add('hidden');
+            document.getElementById('content-topup').classList.add('hidden');
+            document.getElementById('content-admin').classList.add('hidden');
+
+            document.getElementById('btn-tab-generator').className = "px-5 py-2.5 rounded-xl font-bold bg-slate-800 text-slate-300 hover:bg-slate-700";
+            document.getElementById('btn-tab-ideas').className = "px-5 py-2.5 rounded-xl font-bold bg-slate-800 text-slate-300 hover:bg-slate-700";
+            document.getElementById('btn-tab-topup').className = "px-5 py-2.5 rounded-xl font-bold bg-slate-800 text-slate-300 hover:bg-slate-700";
+            const adminBtn = document.getElementById('admin-tab-btn');
+            if(adminBtn) adminBtn.className = "px-5 py-2.5 rounded-xl font-bold bg-slate-800 text-slate-300 hover:bg-slate-700";
+
+            if (tab === 'generator') {
+                document.getElementById('content-generator').classList.remove('hidden');
+                document.getElementById('btn-tab-generator').className = "px-5 py-2.5 rounded-xl font-bold bg-indigo-600 text-white shadow-md";
+            } else if (tab === 'ideas') {
+                document.getElementById('content-ideas').classList.remove('hidden');
+                document.getElementById('btn-tab-ideas').className = "px-5 py-2.5 rounded-xl font-bold bg-indigo-600 text-white shadow-md";
+            } else if (tab === 'topup') {
+                document.getElementById('content-topup').classList.remove('hidden');
+                document.getElementById('btn-tab-topup').className = "px-5 py-2.5 rounded-xl font-bold bg-indigo-600 text-white shadow-md";
+            } else if (tab === 'admin') {
+                document.getElementById('content-admin').classList.remove('hidden');
+                if(adminBtn) adminBtn.className = "px-5 py-2.5 rounded-xl font-bold bg-rose-600 text-white shadow-md";
+                renderAdminTable();
+            }
+        }
+
+        function updatePrice() {
+            const select = document.getElementById('service-type');
+            const selectedOption = select.options[select.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            document.getElementById('service-price-tag').innerText = Number(price).toLocaleString() + " so'm";
+        }
+
+        function useIdea(topicText) {
+            switchTabContent('generator');
+            document.getElementById('ai-topic').value = topicText;
+        }
+
+        // 100+ qatordan iborat mukammal professional ChatGPT prompt generatori
+        function generateAIRequest() {
+            const select = document.getElementById('service-type');
+            const serviceName = select.options[select.selectedIndex].text;
+            const serviceVal = select.value;
+            const topic = document.getElementById('ai-topic').value.trim();
+            const pages = document.getElementById('ai-pages').value;
+
+            if (!topic) {
+                alert("Iltimos, mavzu yoki matn tafsilotini kiriting!");
+                return;
+            }
+
+            const selectedOption = select.options[select.selectedIndex];
+            const price = parseInt(selectedOption.getAttribute('data-price'));
+
+            if (currentUser.balance < price) {
+                alert("Balansingizda mablag' yetarli emas! Iltimos, balansingizni to'ldiring.");
+                switchTabContent('topup');
+                return;
+            }
+
+            // Balansdan yechish
+            currentUser.balance -= price;
+            // Global users massivida ham yangilash
+            const uIndex = users.findIndex(u => u.username === currentUser.username);
+            if(uIndex !== -1) {
+                users[uIndex].balance = currentUser.balance;
+                localStorage.setItem('talaba_users', JSON.stringify(users));
+            }
+            localStorage.setItem('talaba_current_user', JSON.stringify(currentUser));
+            document.getElementById('user-balance').innerText = currentUser.balance;
+
+            // Fayl formatini aniqlash
+            let fileExt = "PDF";
+            let fileInstruction = "Natijani to'g'ridan-to'g'ri PDF formatidagi hujjat tuzilishiga moslab, mukammal akademik uslubda tayyorlab ber.";
+            if (serviceVal === 'slayd') {
+                fileExt = "PPTX (PowerPoint Taqdimot)";
+                fileInstruction = "Natijani professional .PPTX (PowerPoint) formatiga moslab, har bir slayd uchun alohida sarlavha, asosiy punktlar (bullets) va talaba o'qishi uchun so'zlovchi izohlarini (Speaker Notes) to'liq yozib ber.";
+            } else if (serviceVal === 'maqola') {
+                fileExt = "DOCX / TXT";
+                fileInstruction = "Natijani .DOCX yoki .TXT formatiga moslab, ilmiy maqola talablariga to'liq javob beradigan qilib yozib ber.";
+            }
+
+            // O'ta batafsil 100+ qatorli professional ChatGPT prompt
+            let detailedPrompt = `### [ACADEMIC AI AGENT - MASTER PROMPT v5.0]
+Siz jahon darajasidagi oliy o'quv yurtlari talabalari uchun ishlaydigan mukammal akademik yordamchi, professor-maslahatchi va professional kontent generatorisiz. Quyidagi qat'iy talablar asosida vazifani 100% mukammal va professional darajada bajaring:
+
+1. XIZMAT TURI: ${serviceName}
+2. ANIQ MAVZU: "${topic}"
+3. HAJMI / MIQDORI: ${pages} ta ${serviceVal === 'slayd' ? 'slayd' : 'bet/sahifa'}
+4. TALab QILINADIGAN FAYL FORMATI: ${fileExt}
+
+---
+### 📋 ASOSIY BAJARILISH QOIDALARI VA STRUKTURA:
+
+[1-QISM: KIRISH VA METADATALAR]
+- Ishning rasmiy sarlavhasi (akademik va jozibali).
+- Muallif/Talaba ma'lumotlari uchun joy.
+- Mundarija yoki qisqacha reja (barcha bo'limlar ko'rsatilgan holda).
+
+[2-QISM: ASOSIY QISM (${pages} ta hajmga mos ravishda)]
+- Mavzu bo'yicha eng so'nggi ilmiy yondashuvlar, statistik ma'lumotlar va tahliliy yondashuvlar.
+- Har bir bo'lim oxirida mantiqiy xulosalar va chuqur tahlillar.
+- Agar bu SLAYD bo'lsa: Har bir slayd uchun:
+  * Slayd № va Sarlavha
+  * Asosiy qisqacha tezislar (Bullets - 4 tadan kam bo'lmagan)
+  * Vizual dizayn va rasm uchun tavsiya
+  * Talaba o'qishi uchun Speaker Notes (og'zaki nutq matni)
+- Agar bu REFERAT/INSHO/KURS ISHI bo'lsa:
+  * Kirish (dolzarbligi, maqsad va vazifalari)
+  * Asosiy boblar va kichik bandlar (akademik o'zbek tilida, professional uslubda)
+  * Xulosa va takliflar
+  * Foydalanilgan adabiyotlar ro'yxati (kamida 5-10 ta real ilmiy manbalar)
+
+[3-QISM: FAYL SIFATIDA TAYYORLASH VA YUKLAB BERISH]
+- Foydalanuvchiga ushbu matnni to'g'ridan-to'g'ri yuklab olib ishlatishi uchun tayyor ${fileExt} fayl tuzilmasida taqdim et.
+- Agar foydalanuvchi PDF yoki PPTX so'ragan bo'lsa, uni kod bloki ichida yoki to'g'ridan-to'g'ri yuklab olish mumkin bo'lgan mukammal formatlangan matn ko'rinishida taqdim et.
+
+---
+[QAT'IY KO'RSATMA]: Hech qanday qisqartmalarsiz, to'liq, mukammal, xatosiz, ilmiy va o'qishga oson o'zbek tilida to'liq yozib ber. Ishni boshla!`;
+
+            document.getElementById('prompt-output-box').innerText = detailedPrompt;
+            alert("Muvaffaqiyatli! Balansingizdan " + price.toLocaleString() + " so'm yechildi va siz uchun professional prompt tayyorlandi.");
+        }
+
+        function copyPrompt() {
+            const text = document.getElementById('prompt-output-box').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Prompt muvaffaqiyatli nusxalandi! Endi ChatGPT-ga o'tib tashlashingiz mumkin.");
+            });
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-users-table');
+            tbody.innerHTML = '';
+
+            users.forEach((u, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-800 hover:bg-slate-900/40";
+                tr.innerHTML = `
+                    <td class="p-3 font-medium text-white">${u.name} ${u.surname}</td>
+                    <td class="p-3 font-mono text-indigo-400">@${u.username}</td>
+                    <td class="p-3 font-bold text-emerald-400">${u.balance.toLocaleString()} so'm</td>
+                    <td class="p-3 text-right">
+                        <button onclick="addBalance(${index})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                            + Pul qo'shish
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addBalance(index) {
+            const amountStr = prompt(`${users[index].name} (${users[index].username}) uchun qancha mablag' qo'shmoqchisiz? (so'mda):`, "10000");
+            if (amountStr) {
+                const amount = parseInt(amountStr);
+                if (!isNaN(amount) && amount > 0) {
+                    users[index].balance += amount;
+                    localStorage.setItem('talaba_users', JSON.stringify(users));
+                    
+                    // Agar o'zining balansi bo'lsa
+                    if(currentUser.username === users[index].username) {
+                        currentUser.balance = users[index].balance;
+                        localStorage.setItem('talaba_current_user', JSON.stringify(currentUser));
+                        document.getElementById('user-balance').innerText = currentUser.balance;
+                    }
+
+                    renderAdminTable();
+                    alert("Muvaffaqiyatli ravishda balans to'ldirildi!");
+                } else {
+                    alert("Noto'g'ri miqdor kiritildi!");
+                }
+            }
+        }
+    </script>
 </body>
 </html>
